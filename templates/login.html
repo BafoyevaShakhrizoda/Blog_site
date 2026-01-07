@@ -1,0 +1,27 @@
+<!-- templates/login.html -->
+{% extends 'base.html' %}
+
+{% block title %}Kirish - TechBlog{% endblock %}
+
+{% block content %}
+<div class="login-container">
+    <div class="login-card">
+        <h1 class="login-title">Tizimga kirish</h1>
+        <form method="POST" action="{% url 'login' %}">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="username" class="form-label">Foydalanuvchi nomi</label>
+                <input type="text" id="username" name="username" class="form-input" placeholder="username" required>
+            </div>
+            <div class="form-group">
+                <label for="password" class="form-label">Parol</label>
+                <input type="password" id="password" name="password" class="form-input" placeholder="••••••••" required>
+            </div>
+            <button type="submit" class="btn-submit">Kirish</button>
+        </form>
+        <p class="form-footer">
+            Hisobingiz yo'qmi? <a href="{% url 'register' %}">Ro'yxatdan o'tish</a>
+        </p>
+    </div>
+</div>
+{% endblock %}

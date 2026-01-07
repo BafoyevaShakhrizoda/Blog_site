@@ -1,0 +1,498 @@
+<!-- templates/base.html -->
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}TechBlog{% endblock %}</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            background-color: #f9fafb;
+        }
+
+        /* Navbar */
+        .navbar {
+            background: linear-gradient(135deg, #2563eb 0%, #9333ea 100%);
+            color: white;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .navbar-container {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 0 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 64px;
+        }
+
+        .navbar-brand {
+            font-size: 1.5rem;
+            font-weight: bold;
+            text-decoration: none;
+            color: white;
+        }
+
+        .navbar-left {
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+        }
+
+        .navbar-menu {
+            display: flex;
+            gap: 1rem;
+            list-style: none;
+        }
+
+        .navbar-menu a {
+            color: white;
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+            border-radius: 0.375rem;
+            transition: background-color 0.3s;
+        }
+
+        .navbar-menu a:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .navbar-menu a.active {
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .navbar-auth {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .btn {
+            padding: 0.5rem 1.5rem;
+            border-radius: 0.375rem;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s;
+            border: none;
+            cursor: pointer;
+            display: inline-block;
+        }
+
+        .btn-primary {
+            background-color: white;
+            color: #2563eb;
+        }
+
+        .btn-primary:hover {
+            background-color: #f3f4f6;
+        }
+
+        .btn-danger {
+            background-color: #ef4444;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background-color: #dc2626;
+        }
+
+        .user-info {
+            background-color: rgba(255, 255, 255, 0.1);
+            padding: 0.5rem 1rem;
+            border-radius: 0.375rem;
+        }
+
+        /* Main Content */
+        main {
+            flex: 1;
+            max-width: 1280px;
+            width: 100%;
+            margin: 0 auto;
+            padding: 2rem 1rem;
+        }
+
+        /* Footer */
+        footer {
+            background-color: #1f2937;
+            color: white;
+            margin-top: auto;
+        }
+
+        .footer-container {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 2rem 1rem;
+        }
+
+        .footer-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .footer-section h3, .footer-section h4 {
+            margin-bottom: 1rem;
+        }
+
+        .footer-section p, .footer-section ul {
+            color: #9ca3af;
+        }
+
+        .footer-section ul {
+            list-style: none;
+        }
+
+        .footer-section ul li {
+            margin-bottom: 0.5rem;
+            cursor: pointer;
+            transition: color 0.3s;
+        }
+
+        .footer-section ul li:hover {
+            color: white;
+        }
+
+        .footer-bottom {
+            border-top: 1px solid #374151;
+            padding-top: 1.5rem;
+            text-align: center;
+            color: #9ca3af;
+        }
+
+        /* Hero Section */
+        .hero {
+            background: linear-gradient(135deg, #3b82f6 0%, #9333ea 100%);
+            color: white;
+            padding: 3rem 2rem;
+            border-radius: 0.5rem;
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .hero h1 {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .hero p {
+            font-size: 1.25rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .btn-hero {
+            background-color: white;
+            color: #2563eb;
+            padding: 0.75rem 2rem;
+            font-size: 1.1rem;
+        }
+
+        /* Section Title */
+        .section-title {
+            font-size: 2rem;
+            font-weight: bold;
+            margin-bottom: 1.5rem;
+            color: #1f2937;
+        }
+
+        /* Posts Grid */
+        .posts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .post-card {
+            background: white;
+            border-radius: 0.5rem;
+            overflow: hidden;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            transition: box-shadow 0.3s;
+        }
+
+        .post-card:hover {
+            box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .post-image {
+            width: 100%;
+            height: 192px;
+            object-fit: cover;
+        }
+
+        .post-content {
+            padding: 1.5rem;
+        }
+
+        .post-title {
+            font-size: 1.25rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+            color: #1f2937;
+        }
+
+        .post-excerpt {
+            color: #6b7280;
+            margin-bottom: 1rem;
+            line-height: 1.5;
+        }
+
+        .post-meta {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.875rem;
+            color: #9ca3af;
+        }
+
+        /* Login Form */
+        .login-container {
+            max-width: 28rem;
+            margin: 0 auto;
+        }
+
+        .login-card {
+            background: white;
+            border-radius: 0.5rem;
+            box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+            padding: 2rem;
+        }
+
+        .login-title {
+            font-size: 1.875rem;
+            font-weight: bold;
+            text-align: center;
+            margin-bottom: 1.5rem;
+            color: #1f2937;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: #374151;
+            margin-bottom: 0.5rem;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 0.5rem 1rem;
+            border: 1px solid #d1d5db;
+            border-radius: 0.375rem;
+            font-size: 1rem;
+            transition: all 0.3s;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #2563eb;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        .btn-submit {
+            width: 100%;
+            background-color: #2563eb;
+            color: white;
+            padding: 0.75rem;
+            font-size: 1rem;
+            font-weight: 600;
+            border: none;
+            border-radius: 0.375rem;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .btn-submit:hover {
+            background-color: #1d4ed8;
+        }
+
+        .form-footer {
+            margin-top: 1.5rem;
+            text-align: center;
+            color: #6b7280;
+        }
+
+        .form-footer a {
+            color: #2563eb;
+            font-weight: 600;
+            text-decoration: none;
+        }
+
+        .form-footer a:hover {
+            text-decoration: underline;
+        }
+
+        /* Posts List Page */
+        .posts-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .post-list-card {
+            background: white;
+            border-radius: 0.5rem;
+            overflow: hidden;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            display: flex;
+            transition: box-shadow 0.3s;
+        }
+
+        .post-list-card:hover {
+            box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .post-list-image {
+            width: 256px;
+            height: 192px;
+            object-fit: cover;
+        }
+
+        .post-list-content {
+            padding: 1.5rem;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .post-list-title {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+            color: #1f2937;
+        }
+
+        .post-list-excerpt {
+            color: #6b7280;
+            margin-bottom: 1rem;
+            flex: 1;
+            line-height: 1.5;
+        }
+
+        .post-list-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .post-list-meta {
+            font-size: 0.875rem;
+            color: #9ca3af;
+        }
+
+        .btn-read {
+            background-color: #2563eb;
+            color: white;
+            padding: 0.5rem 1.5rem;
+            border-radius: 0.375rem;
+            text-decoration: none;
+            transition: background-color 0.3s;
+        }
+
+        .btn-read:hover {
+            background-color: #1d4ed8;
+        }
+
+        @media (max-width: 768px) {
+            .navbar-menu {
+                display: none;
+            }
+
+            .hero h1 {
+                font-size: 2rem;
+            }
+
+            .posts-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .post-list-card {
+                flex-direction: column;
+            }
+
+            .post-list-image {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="navbar-container">
+            <div class="navbar-left">
+                <a href="{% url 'home' %}" class="navbar-brand">TechBlog</a>
+                <ul class="navbar-menu">
+                    <li><a href="{% url 'home' %}" class="{% if request.path == '/' %}active{% endif %}">Bosh sahifa</a></li>
+                    <li><a href="{% url 'posts' %}" class="{% if 'posts' in request.path %}active{% endif %}">Maqolalar</a></li>
+                </ul>
+            </div>
+            <div class="navbar-auth">
+                {% if user.is_authenticated %}
+                    <div class="user-info">{{ user.username }}</div>
+                    <a href="{% url 'logout' %}" class="btn btn-danger">Chiqish</a>
+                {% else %}
+                    <a href="{% url 'login' %}" class="btn btn-primary">Kirish</a>
+                {% endif %}
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main>
+        {% block content %}
+        {% endblock %}
+    </main>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-container">
+            <div class="footer-grid">
+                <div class="footer-section">
+                    <h3>TechBlog</h3>
+                    <p>Texnologiya va dasturlash haqida eng so'nggi yangiliklar va maqolalar.</p>
+                </div>
+                <div class="footer-section">
+                    <h4>Havolalar</h4>
+                    <ul>
+                        <li>Biz haqimizda</li>
+                        <li>Aloqa</li>
+                        <li>Maxfiylik siyosati</li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Ijtimoiy tarmoqlar</h4>
+                    <ul>
+                        <li>Telegram</li>
+                        <li>Instagram</li>
+                        <li>YouTube</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2026 TechBlog. Barcha huquqlar himoyalangan.</p>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>
+
+
+
+
+
+
