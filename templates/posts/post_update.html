@@ -1,0 +1,288 @@
+<!-- templates/posts/post_update.html -->
+{% extends 'base.html' %}
+
+{% block title %}Maqolani tahrirlash - TechBlog{% endblock %}
+
+{% block content %}
+<div style="max-width: 800px; margin: 0 auto;">
+    <div style="background: white; border-radius: 0.5rem; box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1); padding: 2rem;">
+
+        <!-- Page Title -->
+        <div style="text-align: center; margin-bottom: 2rem;">
+            <h1 style="font-size: 2rem; font-weight: bold; color: #1f2937; margin-bottom: 0.5rem;">
+                Maqolani tahrirlash
+            </h1>
+            <p style="color: #6b7280; font-size: 0.875rem;">
+                Maqola ma'lumotlarini yangilang
+            </p>
+        </div>
+
+        <form method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+
+            <!-- Title Field -->
+            <div class="form-group">
+                <label for="id_title" class="form-label">
+                    Sarlavha *
+                </label>
+                {{ form.title }}
+                {% if form.title.errors %}
+                <div class="error-message">
+                    {{ form.title.errors }}
+                </div>
+                {% endif %}
+            </div>
+
+            <!-- Excerpt Field -->
+            <div class="form-group">
+                <label for="id_excerpt" class="form-label">
+                    Qisqacha mazmun *
+                </label>
+                {{ form.excerpt }}
+                <small style="color: #6b7280; font-size: 0.875rem; display: block; margin-top: 0.25rem;">
+                    Maqolaning qisqacha tavsifi (maksimal 200 so'z)
+                </small>
+                {% if form.excerpt.errors %}
+                <div class="error-message">
+                    {{ form.excerpt.errors }}
+                </div>
+                {% endif %}
+            </div>
+
+            <!-- Content Field -->
+            <div class="form-group">
+                <label for="id_content" class="form-label">
+                    Maqola matni *
+                </label>
+                {{ form.content }}
+                {% if form.content.errors %}
+                <div class="error-message">
+                    {{ form.content.errors }}
+                </div>
+                {% endif %}
+            </div>
+
+            <!-- Current Image Display -->
+            {% if post.image %}
+            <div class="form-group">
+                <label class="form-label">
+                    Hozirgi rasm:
+                </label>
+                <div style="background: #f9fafb; padding: 1rem; border-radius: 0.375rem; border: 2px solid #e5e7eb;">
+                    <img src="{{ post.image.url }}" alt="{{ post.title }}" style="max-width: 100%; height: auto; border-radius: 0.375rem;">
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- New Image Upload -->
+            <div class="form-group">
+                <label for="id_image" class="form-label">
+                    {% if post.image %}
+                    Yangi rasm yuklash (ixtiyoriy)
+                    {% else %}
+                    Rasm yuklash (ixtiyoriy)
+                    {% endif %}
+                </label>
+                {{ form.image }}
+                <small style="color: #6b7280; font-size: 0.875rem; display: block; margin-top: 0.25rem;">
+                    PNG, JPG, JPEG formatida rasm yuklang. Maksimal hajm: 5MB
+                </small>
+                {% if form.image.errors %}
+                <div class="error-message">
+                    {{ form.image.errors }}
+                </div>
+                {% endif %}
+            </div>
+
+            <!-- Tags Field -->
+            {% if form.tags %}
+            <div class="form-group">
+                <label for="id_tags" class="form-label">
+                    Teglar (ixtiyoriy)
+                </label>
+                {{ form.tags }}
+                <small style="color: #6b7280; font-size: 0.875rem; display: block; margin-top: 0.25rem;">
+                    Maqola uchun teglar tanlang
+                </small>
+                {% if form.tags.errors %}
+                <div class="error-message">
+                    {{ form.tags.errors }}
+                </div>
+                {% endif %}
+            </div>
+            {% endif %}
+
+            <!-- Non-field Errors -->
+            {% if form.non_field_errors %}
+            <div class="alert-error">
+                <strong>Xatolik!</strong>
+                {{ form.non_field_errors }}
+            </div>
+            {% endif %}
+
+            <!-- Action Buttons -->
+            <div class="button-group">
+                <button type="submit" class="btn-primary-update">
+                    <svg style="width: 20px; height: 20px; display: inline-block; vertical-align: middle; margin-right: 0.5rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                    </svg>
+                    O'zgarishlarni saqlash
+                </button>
+                <a href="{% url 'post_detail' post.id %}" class="btn-secondary">
+                    <svg style="width: 20px; height: 20px; display: inline-block; vertical-align: middle; margin-right: 0.5rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                    Bekor qilish
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<style>
+    /* Form Groups */
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+
+    /* Labels */
+    .form-label {
+        display: block;
+        font-size: 0.875rem;
+        font-weight: 600;
+        color: #374151;
+        margin-bottom: 0.5rem;
+    }
+
+    /* Error Messages */
+    .error-message {
+        color: #ef4444;
+        font-size: 0.875rem;
+        margin-top: 0.5rem;
+        padding: 0.5rem;
+        background-color: #fef2f2;
+        border-left: 3px solid #ef4444;
+        border-radius: 0.25rem;
+    }
+
+    /* Alert Error */
+    .alert-error {
+        background-color: #fef2f2;
+        border: 1px solid #fecaca;
+        color: #991b1b;
+        padding: 1rem;
+        border-radius: 0.375rem;
+        margin-bottom: 1.5rem;
+    }
+
+    /* Form Inputs */
+    input[type="text"],
+    textarea,
+    input[type="file"],
+    select {
+        width: 100%;
+        padding: 0.625rem 1rem;
+        border: 1px solid #d1d5db;
+        border-radius: 0.375rem;
+        font-size: 1rem;
+        transition: all 0.3s;
+        font-family: inherit;
+        background-color: white;
+    }
+
+    input[type="text"]:focus,
+    textarea:focus,
+    select:focus {
+        outline: none;
+        border-color: #f59e0b;
+        box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.1);
+    }
+
+    textarea {
+        min-height: 250px;
+        resize: vertical;
+        line-height: 1.6;
+    }
+
+    /* File Input Styling */
+    input[type="file"] {
+        padding: 0.5rem;
+        cursor: pointer;
+    }
+
+    /* Button Group */
+    .button-group {
+        display: flex;
+        gap: 1rem;
+        margin-top: 2rem;
+        padding-top: 1.5rem;
+        border-top: 1px solid #e5e7eb;
+    }
+
+    /* Primary Button (Update) */
+    .btn-primary-update {
+        flex: 1;
+        background-color: #f59e0b;
+        color: white;
+        padding: 0.875rem 1.5rem;
+        font-size: 1rem;
+        font-weight: 600;
+        border: none;
+        border-radius: 0.375rem;
+        cursor: pointer;
+        transition: all 0.3s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .btn-primary-update:hover {
+        background-color: #d97706;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .btn-primary-update:active {
+        transform: translateY(0);
+    }
+
+    /* Secondary Button (Cancel) */
+    .btn-secondary {
+        flex: 1;
+        background-color: #6b7280;
+        color: white;
+        padding: 0.875rem 1.5rem;
+        font-size: 1rem;
+        font-weight: 600;
+        text-align: center;
+        border-radius: 0.375rem;
+        text-decoration: none;
+        transition: all 0.3s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .btn-secondary:hover {
+        background-color: #4b5563;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .btn-secondary:active {
+        transform: translateY(0);
+    }
+
+    /* Responsive Design */
+    @media (max-width: 640px) {
+        .button-group {
+            flex-direction: column;
+        }
+
+        .btn-primary-update,
+        .btn-secondary {
+            width: 100%;
+        }
+    }
+</style>
+{% endblock %}
