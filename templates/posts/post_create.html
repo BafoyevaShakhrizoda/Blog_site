@@ -1,0 +1,186 @@
+!-- templates/posts/post_create.html -->
+{% extends 'base.html' %}
+
+{% block title %}Yangi maqola yaratish - TechBlog{% endblock %}
+
+{% block content %}
+<div style="max-width: 800px; margin: 0 auto;">
+    <div style="background: white; border-radius: 0.5rem; box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1); padding: 2rem;">
+        <h1 style="font-size: 2rem; font-weight: bold; text-align: center; margin-bottom: 2rem; color: #1f2937;">
+            Yangi maqola yaratish
+        </h1>
+
+        <form method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+
+            <!-- Title -->
+            <div class="form-group">
+                <label for="id_title" class="form-label">
+                    Sarlavha *
+                </label>
+                {{ form.title }}
+                {% if form.title.errors %}
+                <div class="error-message">
+                    {{ form.title.errors }}
+                </div>
+                {% endif %}
+            </div>
+
+            <!-- Excerpt -->
+            <div class="form-group">
+                <label for="id_excerpt" class="form-label">
+                    Qisqacha mazmun *
+                </label>
+                {{ form.excerpt }}
+                {% if form.excerpt.errors %}
+                <div class="error-message">
+                    {{ form.excerpt.errors }}
+                </div>
+                {% endif %}
+            </div>
+
+            <!-- Content -->
+            <div class="form-group">
+                <label for="id_content" class="form-label">
+                    Maqola matni *
+                </label>
+                {{ form.content }}
+                {% if form.content.errors %}
+                <div class="error-message">
+                    {{ form.content.errors }}
+                </div>
+                {% endif %}
+            </div>
+
+            <!-- Image -->
+            <div class="form-group">
+                <label for="id_image" class="form-label">
+                    Rasm (ixtiyoriy)
+                </label>
+                {{ form.image }}
+                {% if form.image.errors %}
+                <div class="error-message">
+                    {{ form.image.errors }}
+                </div>
+                {% endif %}
+                <small style="color: #6b7280; font-size: 0.875rem; display: block; margin-top: 0.25rem;">
+                    PNG, JPG, JPEG formatida rasm yuklang
+                </small>
+            </div>
+
+            <!-- Tags -->
+            {% if form.tags %}
+            <div class="form-group">
+                <label for="id_tags" class="form-label">
+                    Teglar (ixtiyoriy)
+                </label>
+                {{ form.tags }}
+                {% if form.tags.errors %}
+                <div class="error-message">
+                    {{ form.tags.errors }}
+                </div>
+                {% endif %}
+            </div>
+            {% endif %}
+
+            <!-- Form Errors -->
+            {% if form.non_field_errors %}
+            <div style="background-color: #fef2f2; border: 1px solid #fecaca; color: #991b1b; padding: 1rem; border-radius: 0.375rem; margin-bottom: 1.5rem;">
+                {{ form.non_field_errors }}
+            </div>
+            {% endif %}
+
+            <!-- Buttons -->
+            <div style="display: flex; gap: 1rem; margin-top: 2rem;">
+                <button type="submit" class="btn-submit-create">
+                    Maqolani saqlash
+                </button>
+                <a href="{% url 'post_list' %}" class="btn-cancel">
+                    Bekor qilish
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<style>
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+
+    .form-label {
+        display: block;
+        font-size: 0.875rem;
+        font-weight: 500;
+        color: #374151;
+        margin-bottom: 0.5rem;
+    }
+
+    .error-message {
+        color: #ef4444;
+        font-size: 0.875rem;
+        margin-top: 0.25rem;
+    }
+
+    input[type="text"],
+    textarea,
+    input[type="file"],
+    select {
+        width: 100%;
+        padding: 0.5rem 1rem;
+        border: 1px solid #d1d5db;
+        border-radius: 0.375rem;
+        font-size: 1rem;
+        transition: all 0.3s;
+        font-family: inherit;
+    }
+
+    input[type="text"]:focus,
+    textarea:focus,
+    select:focus {
+        outline: none;
+        border-color: #2563eb;
+        box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+    }
+
+    textarea {
+        min-height: 200px;
+        resize: vertical;
+    }
+
+    .btn-submit-create {
+        flex: 1;
+        background-color: #2563eb;
+        color: white;
+        padding: 0.75rem;
+        font-size: 1rem;
+        font-weight: 600;
+        border: none;
+        border-radius: 0.375rem;
+        cursor: pointer;
+        transition: background-color 0.3s;
+    }
+
+    .btn-submit-create:hover {
+        background-color: #1d4ed8;
+    }
+
+    .btn-cancel {
+        flex: 1;
+        background-color: #6b7280;
+        color: white;
+        padding: 0.75rem;
+        font-size: 1rem;
+        font-weight: 600;
+        text-align: center;
+        border-radius: 0.375rem;
+        text-decoration: none;
+        transition: background-color 0.3s;
+        display: block;
+    }
+
+    .btn-cancel:hover {
+        background-color: #4b5563;
+    }
+</style>
+{% endblock %}
