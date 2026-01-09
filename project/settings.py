@@ -37,8 +37,13 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'apps.users',
-    'apps.blog',
+    'apps.users.apps.UsersConfig',
+    'apps.seller.apps.SellerConfig',
+    'apps.payment.apps.PaymentConfig',
+    'apps.orders.apps.OrdersConfig',
+    'apps.products.apps.ProductsConfig',
+    'apps.main.apps.MainConfig',
+
 ]
 
 MIDDLEWARE = [
@@ -127,3 +132,5 @@ STATICFILES_DIRS = [
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+AUTH_USER_MODEL = "users.CustomUser"
