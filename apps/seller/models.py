@@ -10,6 +10,7 @@ class Seller(models.Model):
     description = models.TextField(blank=True)
     seller_rating = models.FloatField(default=0)
     joined_at = models.DateTimeField(auto_now_add=True)
+    shop_balance = models.DecimalField(max_digits=40, decimal_places=2)
 
     def __str__(self):
         return self.shop_name
