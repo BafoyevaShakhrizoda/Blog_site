@@ -1,0 +1,101 @@
+{% extends 'users/base.html' %}
+
+{% block content %}
+<div class="max-w-2xl mx-auto mt-12">
+    <div class="bg-white rounded-lg shadow-lg p-8 text-center">
+        <!-- Error Icon -->
+        <div class="mb-6">
+            <div class="w-24 h-24 bg-red-100 rounded-full flex items-center justify-center mx-auto">
+                <i class="fas fa-times-circle text-5xl text-red-600"></i>
+            </div>
+        </div>
+
+        <h2 class="text-3xl font-bold text-gray-800 mb-4">Payment Failed</h2>
+        <p class="text-gray-600 mb-8">We couldn't process your payment. Please try again.</p>
+
+        <!-- Payment Details -->
+        <div class="bg-red-50 rounded-lg p-6 mb-8 text-left border-2 border-red-200">
+            <h3 class="text-lg font-semibold mb-4 text-center text-red-800">Transaction Details</h3>
+            <div class="space-y-3">
+                <div class="flex justify-between border-b border-red-200 pb-2">
+                    <span class="text-gray-600">Transaction ID:</span>
+                    <span class="font-semibold">#{{ payment.id|stringformat:"08d" }}</span>
+                </div>
+                <div class="flex justify-between border-b border-red-200 pb-2">
+                    <span class="text-gray-600">Order Number:</span>
+                    <span class="font-semibold">ORD-{{ order.id|stringformat:"06d" }}</span>
+                </div>
+                <div class="flex justify-between border-b border-red-200 pb-2">
+                    <span class="text-gray-600">Attempt Date:</span>
+                    <span class="font-semibold">{{ payment.created_at|date:"F d, Y - H:i" }}</span>
+                </div>
+                <div class="flex justify-between border-b border-red-200 pb-2">
+                    <span class="text-gray-600">Status:</span>
+                    <span class="font-semibold text-red-600">
+                        <i class="fas fa-times-circle mr-1"></i>Failed
+                    </span>
+                </div>
+                <div class="flex justify-between text-xl font-bold text-red-600 pt-3">
+                    <span>Amount:</span>
+                    <span>${{ payment.amount }}</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Possible Reasons -->
+        <div class="bg-gray-50 rounded-lg p-6 mb-8 text-left">
+            <h3 class="text-lg font-semibold mb-4 flex items-center">
+                <i class="fas fa-exclamation-triangle text-yellow-600 mr-2"></i>
+                Common Reasons for Payment Failure
+            </h3>
+            <ul class="text-sm text-gray-600 space-y-2">
+                <li><i class="fas fa-chevron-right text-gray-400 mr-2"></i>Insufficient funds in your account</li>
+                <li><i class="fas fa-chevron-right text-gray-400 mr-2"></i>Incorrect card details or CVV</li>
+                <li><i class="fas fa-chevron-right text-gray-400 mr-2"></i>Card has expired</li>
+                <li><i class="fas fa-chevron-right text-gray-400 mr-2"></i>Transaction declined by your bank</li>
+                <li><i class="fas fa-chevron-right text-gray-400 mr-2"></i>Payment limit exceeded</li>
+            </ul>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="flex flex-col sm:flex-row gap-4 justify-center mb-8">
+            <a href="/payments/pay/{{ order.id }}/" class="bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 transition-colors font-semibold">
+                <i class="fas fa-redo mr-2"></i>Try Again
+            </a>
+            <a href="/payments/cards/" class="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors font-semibold">
+                <i class="fas fa-credit-card mr-2"></i>Use Different Card
+            </a>
+            <a href="/orders/{{ order.id }}/" class="bg-gray-200 text-gray-800 px-6 py-3 rounded-lg hover:bg-gray-300 transition-colors font-semibold">
+                <i class="fas fa-arrow-left mr-2"></i>Back to Order
+            </a>
+        </div>
+
+        <!-- Help Section -->
+        <div class="border-t pt-6">
+            <h4 class="font-semibold mb-3">Need Help?</h4>
+            <div class="flex flex-col sm:flex-row gap-4 justify-center text-sm">
+                <a href="#" class="text-blue-600 hover:text-blue-700">
+                    <i class="fas fa-phone mr-2"></i>Contact Support
+                </a>
+                <a href="#" class="text-blue-600 hover:text-blue-700">
+                    <i class="fas fa-comments mr-2"></i>Live Chat
+                </a>
+                <a href="#" class="text-blue-600 hover:text-blue-700">
+                    <i class="fas fa-question-circle mr-2"></i>Payment FAQ
+                </a>
+            </div>
+        </div>
+
+        <!-- Security Note -->
+        <div class="mt-8 p-4 bg-blue-50 rounded-lg text-left">
+            <div class="flex items-start text-sm text-gray-600">
+                <i class="fas fa-shield-alt text-blue-600 text-xl mr-3 mt-1"></i>
+                <div>
+                    <p class="font-semibold mb-1">Your payment information is secure</p>
+                    <p>No charges were made to your account. You can safely try again or contact your bank if you believe there's an issue.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

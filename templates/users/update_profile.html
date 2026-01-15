@@ -1,0 +1,203 @@
+{% extends 'users/base.html' %}
+
+{% block content %}
+<div class="max-w-3xl mx-auto mt-8">
+    <div class="bg-white rounded-lg shadow-lg p-8">
+        <div class="flex items-center justify-between mb-6">
+            <h2 class="text-3xl font-bold text-gray-800">Update Profile</h2>
+            <a href="{% url 'users:profile_html' %}" class="text-gray-600 hover:text-gray-800">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                </svg>
+            </a>
+        </div>
+
+        <div id="alertContainer"></div>
+
+        <form id="updateProfileForm" enctype="multipart/form-data">
+            <!-- Profile Photo -->
+            <div class="mb-8">
+                <label class="block text-sm font-medium text-gray-700 mb-2">Profile Photo</label>
+                <div class="flex items-center space-x-6">
+                    <div class="shrink-0">
+                        {% if user.photo %}
+                            <img id="photoPreview" src="{{ user.photo.url }}" alt="Profile" class="w-24 h-24 rounded-full object-cover border-2 border-gray-300">
+                        {% else %}
+                            <div id="photoPreview" class="w-24 h-24 rounded-full bg-blue-500 flex items-center justify-center text-white text-2xl font-bold border-2 border-gray-300">
+                                {{ user.first_name.0|upper }}{{ user.last_name.0|upper }}
+                            </div>
+                        {% endif %}
+                    </div>
+                    <label class="block">
+                        <span class="sr-only">Choose photo</span>
+                        <input type="file" id="photo" name="photo" accept="image/*" class="block w-full text-sm text-gray-500
+                            file:mr-4 file:py-2 file:px-4
+                            file:rounded-full file:border-0
+                            file:text-sm file:font-semibold
+                            file:bg-blue-50 file:text-blue-700
+                            hover:file:bg-blue-100
+                        "/>
+                    </label>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                <div>
+                    <label for="first_name" class="block text-sm font-medium text-gray-700 mb-2">First Name</label>
+                    <input 
+                        type="text" 
+                        id="first_name" 
+                        name="first_name" 
+                        class="input-field" 
+                        value="{{ user.first_name }}"
+                        required
+                    >
+                </div>
+
+                <div>
+                    <label for="last_name" class="block text-sm font-medium text-gray-700 mb-2">Last Name</label>
+                    <input 
+                        type="text" 
+                        id="last_name" 
+                        name="last_name" 
+                        class="input-field" 
+                        value="{{ user.last_name }}"
+                        required
+                    >
+                </div>
+            </div>
+
+            <div class="mb-6">
+                <label for="username" class="block text-sm font-medium text-gray-700 mb-2">Username</label>
+                <input 
+                    type="text" 
+                    id="username" 
+                    name="username" 
+                    class="input-field" 
+                    value="{{ user.username }}"
+                    required
+                >
+            </div>
+
+            <div class="mb-6">
+                <label for="phone_number" class="block text-sm font-medium text-gray-700 mb-2">Phone Number</label>
+                <input 
+                    type="tel" 
+                    id="phone_number" 
+                    name="phone_number" 
+                    class="input-field" 
+                    value="{{ user.phone_number }}"
+                    placeholder="+998 90 123 45 67"
+                >
+            </div>
+
+            <div class="mb-6">
+                <label for="bio" class="block text-sm font-medium text-gray-700 mb-2">Bio</label>
+                <textarea 
+                    id="bio" 
+                    name="bio" 
+                    rows="4" 
+                    class="input-field" 
+                    placeholder="Tell us about yourself..."
+                >{{ user.bio }}</textarea>
+            </div>
+
+            <div class="flex gap-4">
+                <button 
+                    type="submit" 
+                    id="submitBtn"
+                    class="btn-primary"
+                >
+                    Save Changes
+                </button>
+                <a href="{% url 'users:profile_html' %}" class="btn-secondary">
+                    Cancel
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    const form = document.getElementById('updateProfileForm');
+    const submitBtn = document.getElementById('submitBtn');
+    const alertContainer = document.getElementById('alertContainer');
+    const photoInput = document.getElementById('photo');
+    const photoPreview = document.getElementById('photoPreview');
+
+    function showAlert(message, type = 'error') {
+        const alertClass = type === 'success' ? 'alert-success' : 'alert-error';
+        alertContainer.innerHTML = `
+            <div class="alert ${alertClass}">
+                ${message}
+            </div>
+        `;
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        setTimeout(() => {
+            alertContainer.innerHTML = '';
+        }, 5000);
+    }
+
+    // Photo preview
+    photoInput.addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                if (photoPreview.tagName === 'IMG') {
+                    photoPreview.src = e.target.result;
+                } else {
+                    const img = document.createElement('img');
+                    img.src = e.target.result;
+                    img.className = 'w-24 h-24 rounded-full object-cover border-2 border-gray-300';
+                    photoPreview.parentNode.replaceChild(img, photoPreview);
+                }
+            };
+            reader.readAsDataURL(file);
+        }
+    });
+
+    form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        
+        const formData = new FormData();
+        formData.append('first_name', document.getElementById('first_name').value.trim());
+        formData.append('last_name', document.getElementById('last_name').value.trim());
+        formData.append('username', document.getElementById('username').value.trim());
+        formData.append('phone_number', document.getElementById('phone_number').value.trim());
+        formData.append('bio', document.getElementById('bio').value.trim());
+        
+        if (photoInput.files[0]) {
+            formData.append('photo', photoInput.files[0]);
+        }
+
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Saving...';
+
+        try {
+            const response = await fetch('/users/api/profile/update/', {
+                method: 'PATCH',
+                body: formData
+            });
+
+            const data = await response.json();
+
+            if (response.ok && data.success) {
+                showAlert(data.message, 'success');
+                setTimeout(() => {
+                    window.location.href = '/users/profile/';
+                }, 1500);
+            } else {
+                showAlert(data.message || 'Failed to update profile');
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Save Changes';
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            showAlert('Network error. Please try again.');
+            submitBtn.disabled = false;
+            submitBtn.textContent = 'Save Changes';
+        }
+    });
+</script>
+{% endblock %}

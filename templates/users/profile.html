@@ -1,0 +1,100 @@
+{% extends 'users/base.html' %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto mt-8">
+    <div class="bg-white rounded-lg shadow-lg overflow-hidden">
+        <!-- Profile Header -->
+        <div class="bg-gradient-to-r from-blue-500 to-blue-600 h-32"></div>
+        
+        <div class="px-8 pb-8">
+            <!-- Profile Picture -->
+            <div class="relative -mt-16 mb-4">
+                <div class="inline-block">
+                    {% if user.photo %}
+                        <img src="{{ user.photo.url }}" alt="Profile" class="w-32 h-32 rounded-full border-4 border-white shadow-lg object-cover">
+                    {% else %}
+                        <div class="w-32 h-32 rounded-full border-4 border-white shadow-lg bg-blue-500 flex items-center justify-center text-white text-4xl font-bold">
+                            {{ user.first_name.0|upper }}{{ user.last_name.0|upper }}
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Profile Info -->
+            <div class="mb-6">
+                <h1 class="text-3xl font-bold text-gray-800 mb-2">
+                    {{ user.first_name }} {{ user.last_name }}
+                </h1>
+                <p class="text-gray-600">@{{ user.username }}</p>
+            </div>
+
+            <!-- Profile Details -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                <div class="border-l-4 border-blue-500 pl-4">
+                    <p class="text-sm text-gray-600 mb-1">Email</p>
+                    <p class="text-lg text-gray-800">{{ user.email }}</p>
+                </div>
+
+                {% if user.phone_number %}
+                <div class="border-l-4 border-blue-500 pl-4">
+                    <p class="text-sm text-gray-600 mb-1">Phone</p>
+                    <p class="text-lg text-gray-800">{{ user.phone_number }}</p>
+                </div>
+                {% endif %}
+
+                <div class="border-l-4 border-blue-500 pl-4">
+                    <p class="text-sm text-gray-600 mb-1">Member Since</p>
+                    <p class="text-lg text-gray-800">{{ user.created_at|date:"F d, Y" }}</p>
+                </div>
+
+                <div class="border-l-4 border-blue-500 pl-4">
+                    <p class="text-sm text-gray-600 mb-1">Account Status</p>
+                    <p class="text-lg">
+                        {% if user.auth_status == 'done' %}
+                            <span class="text-green-600 font-semibold">✓ Verified</span>
+                        {% else %}
+                            <span class="text-yellow-600 font-semibold">Pending</span>
+                        {% endif %}
+                    </p>
+                </div>
+            </div>
+
+            {% if user.bio %}
+            <div class="mb-8">
+                <h3 class="text-lg font-semibold text-gray-800 mb-2">Bio</h3>
+                <p class="text-gray-700">{{ user.bio }}</p>
+            </div>
+            {% endif %}
+
+            <!-- Action Buttons -->
+            <div class="flex flex-wrap gap-4">
+                <a href="{% url 'users:update_profile_html' %}" class="btn-primary">
+                    Edit Profile
+                </a>
+                <a href="{% url 'users:change_password_html' %}" class="btn-secondary">
+                    Change Password
+                </a>
+                <a href="{% url 'users:logout_html' %}" class="btn-secondary text-red-600 hover:bg-red-50">
+                    Logout
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Additional Info Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
+        <div class="bg-white rounded-lg shadow p-6 text-center">
+            <div class="text-3xl font-bold text-blue-600 mb-2">0</div>
+            <p class="text-gray-600">Orders</p>
+        </div>
+        <div class="bg-white rounded-lg shadow p-6 text-center">
+            <div class="text-3xl font-bold text-green-600 mb-2">0</div>
+            <p class="text-gray-600">Reviews</p>
+        </div>
+        <div class="bg-white rounded-lg shadow p-6 text-center">
+            <div class="text-3xl font-bold text-purple-600 mb-2">0</div>
+            <p class="text-gray-600">Wishlist Items</p>
+        </div>
+    </div>
+</div>
+{% endblock %}
