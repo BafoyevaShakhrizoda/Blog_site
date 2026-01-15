@@ -1,11 +1,7 @@
 from django.contrib import admin
+from .models import Cart, CartItem, Order, OrderItem
 
-# Register your models here.
-from .models import UserCartItems, Order
-
-
-class OrderAdmin(admin.ModelAdmin):
-    list_display = ['buyer', 'seller', 'status', 'created_at']
-
-admin.site.register(Order, OrderAdmin)
-admin.site.register(UserCartItems)
+admin.site.register(Cart)
+admin.site.register(CartItem)
+admin.site.register(Order)
+admin.site.register(OrderItem)
