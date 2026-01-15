@@ -1,0 +1,322 @@
+{% extends 'users/base.html' %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto mt-8">
+    <div class="bg-white rounded-lg shadow-lg p-8">
+        <h2 class="text-3xl font-bold text-gray-800 mb-8">Complete Your Payment</h2>
+
+        <!-- Order Summary -->
+        <div class="bg-blue-50 rounded-lg p-6 mb-8">
+            <h3 class="text-xl font-semibold mb-4">Order Summary</h3>
+            <div class="space-y-2">
+                <div class="flex justify-between">
+                    <span class="text-gray-600">Order Number:</span>
+                    <span class="font-semibold">ORD-{{ order.id|stringformat:"06d" }}</span>
+                </div>
+                <div class="flex justify-between">
+                    <span class="text-gray-600">Order Date:</span>
+                    <span class="font-semibold">{{ order.created_at|date:"F d, Y" }}</span>
+                </div>
+                <div class="flex justify-between text-xl font-bold text-blue-600 pt-2 border-t-2">
+                    <span>Total Amount:</span>
+                    <span>${{ order.total }}</span>
+                </div>
+            </div>
+        </div>
+
+        <div id="alertContainer" class="mb-6"></div>
+
+        <!-- Payment Method Selection -->
+        <div class="mb-8">
+            <h3 class="text-xl font-semibold mb-4">Select Payment Method</h3>
+            
+            <div class="space-y-4">
+                <!-- Saved Cards -->
+                {% if user_cards %}
+                <div id="savedCardsSection">
+                    <p class="text-sm text-gray-600 mb-3">Select a saved card:</p>
+                    {% for card in user_cards %}
+                    <div class="border-2 border-gray-300 rounded-lg p-4 hover:border-blue-500 cursor-pointer transition-all mb-3 card-option" data-card-id="{{ card.id }}">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center space-x-4">
+                                <input type="radio" name="payment_method" value="saved_card" data-card-id="{{ card.id }}" class="w-5 h-5">
+                                <div>
+                                    <div class="flex items-center space-x-2">
+                                        <i class="fas fa-credit-card text-blue-600 text-xl"></i>
+                                        <span class="font-semibold">**** **** **** {{ card.card_number|slice:"-4:" }}</span>
+                                        {% if card.is_default %}
+                                        <span class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded">Default</span>
+                                        {% endif %}
+                                    </div>
+                                    <p class="text-sm text-gray-600">{{ card.cardholder_name }}</p>
+                                    <p class="text-xs text-gray-500">Expires: {{ card.exp_month }}/{{ card.exp_year }}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% endif %}
+
+                <!-- New Card Option -->
+                <div class="border-2 border-gray-300 rounded-lg p-4 hover:border-blue-500 cursor-pointer transition-all card-option" data-card-id="new">
+                    <div class="flex items-center space-x-4">
+                        <input type="radio" name="payment_method" value="new_card" id="newCardRadio" class="w-5 h-5">
+                        <div>
+                            <div class="flex items-center space-x-2">
+                                <i class="fas fa-plus-circle text-blue-600 text-xl"></i>
+                                <span class="font-semibold">Add New Card</span>
+                            </div>
+                            <p class="text-sm text-gray-600">Pay with a new credit or debit card</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- New Card Form (Hidden by default) -->
+        <div id="newCardForm" class="hidden mb-8 border-2 border-blue-200 rounded-lg p-6 bg-blue-50">
+            <h3 class="text-lg font-semibold mb-4">Card Information</h3>
+            
+            <div class="grid grid-cols-1 gap-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Card Number</label>
+                    <input 
+                        type="text" 
+                        id="cardNumber" 
+                        class="input-field" 
+                        placeholder="1234 5678 9012 3456"
+                        maxlength="19"
+                    >
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Cardholder Name</label>
+                    <input 
+                        type="text" 
+                        id="cardholderName" 
+                        class="input-field" 
+                        placeholder="JOHN DOE"
+                    >
+                </div>
+
+                <div class="grid grid-cols-3 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Month</label>
+                        <select id="expMonth" class="input-field">
+                            <option value="">MM</option>
+                            {% for i in "123456789012"|make_list %}
+                            <option value="{{ forloop.counter }}">{{ forloop.counter|stringformat:"02d" }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Year</label>
+                        <select id="expYear" class="input-field">
+                            <option value="">YYYY</option>
+                            {% for i in "12345678910"|make_list %}
+                            <option value="{{ 2024|add:forloop.counter0 }}">{{ 2024|add:forloop.counter0 }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">CVV</label>
+                        <input 
+                            type="text" 
+                            id="cvv" 
+                            class="input-field" 
+                            placeholder="123"
+                            maxlength="4"
+                        >
+                    </div>
+                </div>
+
+                <div class="flex items-center">
+                    <input type="checkbox" id="saveCard" class="mr-2 rounded">
+                    <label for="saveCard" class="text-sm text-gray-700">Save this card for future purchases</label>
+                </div>
+            </div>
+        </div>
+
+        <!-- CVV for Saved Card (Hidden by default) -->
+        <div id="savedCardCvv" class="hidden mb-8 border-2 border-blue-200 rounded-lg p-6 bg-blue-50">
+            <h3 class="text-lg font-semibold mb-4">Security Verification</h3>
+            <div class="max-w-xs">
+                <label class="block text-sm font-medium text-gray-700 mb-2">Enter CVV</label>
+                <input 
+                    type="text" 
+                    id="savedCardCvvInput" 
+                    class="input-field" 
+                    placeholder="123"
+                    maxlength="4"
+                >
+                <p class="text-xs text-gray-500 mt-1">3 or 4 digit security code on the back of your card</p>
+            </div>
+        </div>
+
+        <!-- Payment Button -->
+        <div class="flex justify-between items-center">
+            <a href="/orders/{{ order.id }}/" class="text-gray-600 hover:text-gray-800">
+                <i class="fas fa-arrow-left mr-2"></i>Back to Order
+            </a>
+            <button 
+                id="payButton" 
+                class="bg-green-600 text-white px-8 py-3 rounded-lg font-semibold hover:bg-green-700 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed"
+                disabled
+            >
+                <i class="fas fa-lock mr-2"></i>Pay ${{ order.total }}
+            </button>
+        </div>
+
+        <!-- Security Info -->
+        <div class="mt-8 p-4 bg-gray-50 rounded-lg border border-gray-200">
+            <div class="flex items-center text-sm text-gray-600">
+                <i class="fas fa-shield-alt text-green-600 text-xl mr-3"></i>
+                <p>Your payment information is encrypted and secure. We never store your CVV.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const payButton = document.getElementById("payButton");
+    const alertContainer = document.getElementById("alertContainer");
+    const newCardForm = document.getElementById("newCardForm");
+    const savedCardCvv = document.getElementById("savedCardCvv");
+    const cardOptions = document.querySelectorAll(".card-option");
+    const paymentMethodRadios = document.querySelectorAll('input[name="payment_method"]');
+
+    const orderId = "{{ order.id }}";
+    const orderTotal = "{{ order.total }}";
+
+    let selectedCardId = null;
+    let isNewCard = false;
+
+    function showAlert(message, type = "error") {
+        const alertClass = type === "success" ? "alert-success" : "alert-error";
+        alertContainer.innerHTML = `<div class="alert ${alertClass}">${message}</div>`;
+        window.scrollTo({ top: 0, behavior: "smooth" });
+        setTimeout(() => alertContainer.innerHTML = "", 5000);
+    }
+
+    function resetPayButton() {
+        payButton.disabled = false;
+        payButton.innerHTML = `<i class="fas fa-lock mr-2"></i>Pay $${orderTotal}`;
+    }
+
+    cardOptions.forEach(option => {
+        option.addEventListener("click", () => {
+            option.querySelector('input[type="radio"]').checked = true;
+            handlePaymentMethodChange();
+        });
+    });
+
+    paymentMethodRadios.forEach(radio => {
+        radio.addEventListener("change", handlePaymentMethodChange);
+    });
+
+    function handlePaymentMethodChange() {
+        const selected = document.querySelector('input[name="payment_method"]:checked');
+        if (!selected) {
+            payButton.disabled = true;
+            newCardForm.classList.add("hidden");
+            savedCardCvv.classList.add("hidden");
+            return;
+        }
+
+        if (selected.value === "new_card") {
+            isNewCard = true;
+            selectedCardId = null;
+            newCardForm.classList.remove("hidden");
+            savedCardCvv.classList.add("hidden");
+        } else {
+            isNewCard = false;
+            selectedCardId = selected.dataset.cardId;
+            newCardForm.classList.add("hidden");
+            savedCardCvv.classList.remove("hidden");
+        }
+        payButton.disabled = false;
+    }
+
+    const cardNumberInput = document.getElementById("cardNumber");
+    if (cardNumberInput) {
+        cardNumberInput.addEventListener("input", e => {
+            let value = e.target.value.replace(/\D/g, "");
+            e.target.value = value.match(/.{1,4}/g)?.join(" ") || value;
+        });
+    }
+
+    ["cvv", "savedCardCvvInput"].forEach(id => {
+        const input = document.getElementById(id);
+        if (input) input.addEventListener("input", e => e.target.value = e.target.value.replace(/\D/g, ""));
+    });
+
+    payButton.addEventListener("click", async () => {
+        payButton.disabled = true;
+        payButton.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Processing...';
+
+        try {
+            let paymentData = { order_id: Number(orderId) };
+
+            if (isNewCard) {
+                const cardNumber = document.getElementById("cardNumber").value.replace(/\s/g, "");
+                const cardholderName = document.getElementById("cardholderName").value;
+                const expMonth = parseInt(document.getElementById("expMonth").value);
+                const expYear = parseInt(document.getElementById("expYear").value);
+                const cvv = document.getElementById("cvv").value;
+                const saveCard = document.getElementById("saveCard").checked;
+
+                if (!cardNumber || !cardholderName || !expMonth || !expYear || !cvv) {
+                    showAlert("Please fill in all card details");
+                    resetPayButton();
+                    return;
+                }
+
+                Object.assign(paymentData, {
+                    card_number: cardNumber,
+                    cardholder_name: cardholderName,
+                    exp_month: expMonth,
+                    exp_year: expYear,
+                    cvv,
+                    save_card: saveCard
+                });
+
+            } else {
+                const cvv = document.getElementById("savedCardCvvInput").value;
+                if (!cvv) {
+                    showAlert("Please enter CVV");
+                    resetPayButton();
+                    return;
+                }
+                Object.assign(paymentData, { card_id: Number(selectedCardId), cvv });
+            }
+
+            const response = await fetch("/payments/api/process/", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRFToken": "{{ csrf_token }}"
+                },
+                body: JSON.stringify(paymentData)
+            });
+
+            const data = await response.json();
+
+            if (response.ok && data.success) {
+                showAlert(data.message, "success");
+                setTimeout(() => window.location.href = `/payments/success/${data.data.id}/`, 1200);
+            } else {
+                showAlert(data.message || "Payment failed. Try again.");
+                resetPayButton();
+            }
+
+        } catch (error) {
+            console.error(error);
+            showAlert("Network error. Try again.");
+            resetPayButton();
+        }
+    });
+</script>
+{% endblock %}

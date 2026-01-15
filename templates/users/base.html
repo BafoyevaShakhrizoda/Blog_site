@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}{{ title }} - Online Store{% endblock %}</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .btn-primary {
+            @apply bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors duration-200;
+        }
+        .btn-secondary {
+            @apply bg-gray-200 text-gray-800 px-6 py-2 rounded-lg hover:bg-gray-300 transition-colors duration-200;
+        }
+        .input-field {
+            @apply w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all duration-200;
+        }
+        .alert {
+            @apply p-4 rounded-lg mb-4;
+        }
+        .alert-success {
+            @apply bg-green-100 text-green-800 border border-green-300;
+        }
+        .alert-error {
+            @apply bg-red-100 text-red-800 border border-red-300;
+        }
+        .alert-info {
+            @apply bg-blue-100 text-blue-800 border border-blue-300;
+        }
+    </style>
+    {% block extra_css %}{% endblock %}
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <!-- Navbar -->
+    <nav class="bg-white shadow-md">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center">
+                    <a href="/" class="text-2xl font-bold text-blue-600">Online Store</a>
+                </div>
+                <div class="flex items-center space-x-4">
+                    {% if user.is_authenticated %}
+                        <a href="{% url 'users:profile_html' %}" class="text-gray-700 hover:text-blue-600">Profile</a>
+                        <a href="{% url 'users:logout_html' %}" class="text-gray-700 hover:text-blue-600">Logout</a>
+                    {% else %}
+                        <a href="{% url 'users:login_html' %}" class="text-gray-700 hover:text-blue-600">Login</a>
+                        <a href="{% url 'users:send_code_html' %}" class="text-gray-700 hover:text-blue-600">Sign Up</a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-white border-t border-gray-200 mt-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+            <p class="text-center text-gray-600">&copy; 2024 Online Store. All rights reserved.</p>
+        </div>
+    </footer>
+
+    {% block extra_js %}{% endblock %}
+</body>
+</html>
